@@ -2,6 +2,22 @@
 Abstract base class Tree
 """
 
+class BadQueue:
+    """
+    Suboptimal queue just for testing
+    """
+    def __init__(self):
+        self._q = []
+
+    def enqueue(self, k):
+        self._q.insert(0, k)
+
+    def dequeue(self):
+        return self._q.pop()
+
+    def is_empty(self):
+        return len(self._q) == 0
+
 
 class Tree:
     """
@@ -81,6 +97,46 @@ class Tree:
             p = self.root()
         return self._height(p)
 
+    def positions(self):
+        return self.preorder()
+
+    def preorder(self):
+        "Generate a preorder iteration of positions in the tree"
+        if not self.is_empty():
+            for p in self._subtree_preorder(self.root()):
+                yield p
+
+    def _subtree_preorder(self, p):
+        "Generate a preorder iteration of positions in subtree rooted at p"
+        yield p
+        for c in self.children(p):
+            for other in self._subtree_preorder(c):
+                yield other
+
+    def postorder(self):
+        "Generate a postorder iteration of positions in the tree"
+        if not self.is_empty():
+            for p in self._subtree_postorder(self.root()):
+                yield p
+
+    def _subtree_postorder(self, p):
+        "Generate a postorder iteration of positions in subtree rooted at p"
+        for c in self.children(p):
+            for other in self._subtree_postorder(c):
+                yield other
+        yield p
+
+    def breadthfirst(self):
+        "Generate a breadth-first iteration of the positions of the tree"
+        if not self.is_empty():
+            q = BadQueue()
+            q.enqueue(self.root())
+            while not q.is_empty():
+                p = q.dequeue()
+                yield p
+                for c in self.children(p):
+                    q.enqueue(c)
+
 
 class BinaryTree(Tree):
     """
@@ -125,3 +181,23 @@ class BinaryTree(Tree):
             yield self.left(p)
         if self.right(p) is not None:
             yield self.right(p)
+
+    def inorder(self):
+        "Generate an inorder iteration of positions in the tree"
+        if not self.is_empty():
+            for p in self._subtree_inorder(self.root()):
+                yield p
+
+    def _subtree_inorder(self, p):
+        "Generate an inorder iteration of positions in subtree rooted at p"
+        if self.left(p) is not None:
+            for other in self._subtree_inorder(self.left(p)):
+                yield other
+        yield p
+        if self.right(p) is not None:
+            for other in self._subtree_inorder(self.right(p)):
+                yield other
+
+    def positions(self):
+        "For the BinaryTree, inorder traversal provides a natural iteration"
+        return self.inorder()
