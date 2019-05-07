@@ -2,6 +2,7 @@
 Abstract base class Tree
 """
 
+
 class BadQueue:
     """
     Suboptimal queue just for testing
@@ -38,7 +39,7 @@ class Tree:
 
         def __ne__(self, other):
             "Return True if other does not represent the same location"
-            return not (self == other)
+            return not self == other
 
     # -- Abstract methods to be implemented by subclasses --
     def root(self):
